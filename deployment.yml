@@ -1,0 +1,39 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: helloworldservice
+spec:
+  ports:
+  - name: "tcp-helloworld"
+    #port accessible inside the cluster..if two pods wants to communicate with each other
+    port: 80
+    protocol: TCP
+    #port to forward to inside the pod..
+    targetPort: 8081
+    #port accessible outside the cluster.
+    nodePort: 30001
+  selector:
+    app: hello-world
+  type: LoadBalancer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-world
+spec: 
+  replicas: 3
+  selector:
+    matchLabels:
+      app: hello-world
+  template:
+    metadata:
+      labels:
+        app: hello-world
+    spec:
+      containers:
+      - image: bhushapkhaire/microservice.api
+        name: microservice-api
+        ports: 
+          - containerPort: 8081
